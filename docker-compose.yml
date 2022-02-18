@@ -1,0 +1,46 @@
+version: "3.3"
+
+services:
+  db:
+    image: mysql:8.0.26
+    ports:
+      - "3398:3306"
+    environment:
+      MYSQL_DATABASE: demo
+      MYSQL_ROOT_PASSWORD: demo
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/home/derekdeepak/mysql
+      - ./my.cnf:/home/derekdeepak/mysqldb/mysql/my.cnf
+    networks:
+      - app-network
+  php:
+    image: php:8.0
+    volumes:
+      - phpdata:/etc/php/8.0
+    networks:
+      - app-network
+  node:
+    restart: always
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:3000
+    volumes:
+      - ./:/code
+    networks:
+      - app-network
+  git:
+    image: alpine/git
+    networks:
+      - app-network
+  
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  dbdata:
+    driver: local
