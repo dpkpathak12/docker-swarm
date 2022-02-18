@@ -5,7 +5,12 @@ services:
       type: httpd
     image: httpd:2.4-alpine
     deploy:
-      replicas: 2
+      replicas: 4
+      update_config:
+        parallelism: 2
+        order: start-first
+        failure_action: rollback
+        delay: 10s
       rollback_config:
         parallelism: 0
         order: stop-first
