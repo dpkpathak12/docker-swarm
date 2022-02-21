@@ -64,7 +64,7 @@
         DOCUMENTROOT: /var/www/html/${DOCUMENTROOT}
         PHPSERVER: phpserver
       volumes:
-        - type: volume
+        - type: bind
           source: ${HOST_PROJECT_DIR}
           target: /var/www/html
           read_only: true
@@ -112,7 +112,7 @@
         MYSQL_PASSWORD: ${DATABASE_PASSWORD}
         MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       volumes:
-        - type: volume
+        - type: bind
           source: ${MY_CNF}
           target: /var/lib/mysql
       configs:
@@ -145,7 +145,7 @@
       file: ${MY_PWD}
   volumes:
     mysql_data:
-      external: true
+      #external: true
       name: phpapachemysql_mysql
 
       
