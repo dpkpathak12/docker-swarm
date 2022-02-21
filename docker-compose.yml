@@ -1,5 +1,42 @@
 version: "3.7"
 services:
+  backend:
+    image: jakubhajek/nodejs-backend
+    networks:
+      - phpfpmnetwork
+    deploy:
+      mode: replicated
+      replicas: 3
+      labels:
+       - traefik.port=3000
+       - traefik.docker.network=proxy
+       - traefik.frontend.rule=Host:node-app.cometari.com
+      resources:
+        limits:
+         memory: 128M
+  traefik:
+    image: traefik
+    ports:
+     - "80:80"
+     - "443:443"
+     - "8080:8080"
+    networks:
+      - phpfpmnetwork
+    command:
+      - --api
+      - --docker
+      - --docker.swarmmode
+      - --docker.watch
+      - --entrypoints=Name:http Address::80 Redirect.EntryPoint:https
+      - --entrypoints=Name:https Address::443 TLS
+      - --defaultentrypoints=http,https
+    deploy:
+     placement:
+      constraints: [node.role == manager]
+     mode: replicated
+     replicas: 1
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
   apache:
     labels:
       type: httpd
